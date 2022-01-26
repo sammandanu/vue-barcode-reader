@@ -1,18 +1,56 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="hello">
+    <button
+      @click="openCamera = !openCamera"
+      :style="openCamera ? 'margin-bottom: 12px' : ''"
+    >
+      On/Off Camera
+    </button>
+    <StreamBarcodeReader
+      style="margin-bottom: 12px"
+      v-if="openCamera"
+      @decode="(a, b, c) => onDecode(a, b, c)"
+      @loaded="() => onLoaded()"
+    ></StreamBarcodeReader>
+    <h2>Input Value: {{ text || "Nothing" }}</h2>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
+import { StreamBarcodeReader } from "vue-barcode-reader";
+lllllll
 export default {
-  name: 'Home',
+  name: "HelloWorld",
   components: {
-    HelloWorld
-  }
-}
+    StreamBarcodeReader,
+  },
+  data() {
+    return {
+      openCamera: false,
+      text: "",
+      id: null,
+    };
+  },
+  methods: {
+    onDecode(a, b, c) {
+      console.log(a, b, c);
+      this.text = a;
+      if (this.id) clearTimeout(this.id);
+      this.id = setTimeout(() => {
+        if (this.text === a) {
+          this.text = "";
+        }
+      }, 5000);
+    },
+    onLoaded() {
+      console.log("load");
+    },
+  },
+};
 </script>
+<style scoped>
+.hello {
+  max-width: 768px;
+  margin: auto;
+}
+</style>
